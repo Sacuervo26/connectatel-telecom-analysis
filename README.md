@@ -1,121 +1,75 @@
-# ConnectaTel Telecom Analysis
+# ConnectaTel: análisis de clientes y calidad de datos
 
-Proyecto de análisis de datos para **ConnectaTel**, una empresa de telecomunicaciones con operaciones en México y Colombia. El objetivo es entender el comportamiento de los clientes según su uso de llamadas y mensajes, detectar valores atípicos y crear segmentos accionables para apoyar decisiones comerciales.
+Caso académico de telecomunicaciones para un portafolio de Python y análisis de datos. Explora calidad de datos, consumo de llamadas/mensajes y segmentación mediante reglas. **No acredita un encargo comercial ni resultados obtenidos para una empresa real.**
 
-## Objetivo del proyecto
+## Estado de reproducción
 
-Analizar tres fuentes de datos de clientes, planes y uso real de servicios móviles para responder preguntas de negocio como:
+El código está disponible, pero **los CSV del curso no se distribuyen**. No se ha reejecutado el análisis completo con los datos originales. Las cifras y conclusiones conservadas en el notebook son históricas, no resultados verificados del código corregido. No deben citarse como métricas actuales.
 
-- ¿Qué segmentos de clientes muestran mayor o menor uso de llamadas y mensajes?
-- ¿Qué usuarios presentan comportamientos atípicos?
-- ¿Cómo varía el uso según edad y plan contratado?
-- ¿Qué oportunidades comerciales pueden ayudar a mejorar la oferta de planes y la retención?
+La revisión corrige rutas locales, suma de minutos exclusivamente de llamadas, filtro de eventos de 2024 y clasificación de usuarios sin eventos. Las salidas antiguas se limpiaron porque estos cambios pueden alterar resultados.
 
-## Datasets utilizados
+## Pregunta de negocio
 
-El proyecto usa tres archivos CSV:
+¿Cómo varía el uso observado de llamadas y mensajes, qué problemas de calidad afectan sus métricas y qué segmentos conviene investigar para diseñar ofertas?
 
-| Archivo | Descripción |
+El notebook incluye exploración, nulos y sentinels, fechas, perfiles por usuario, histogramas, IQR y segmentos por edad/uso. No incluye un modelo predictivo de abandono ni demuestra incremento de ventas o rentabilidad.
+
+## Datos necesarios
+
+Coloca archivos autorizados en `data/raw/`:
+
+| Archivo | Columnas utilizadas |
 |---|---|
-| `plans.csv` | Información de los planes, precio mensual, minutos, GB incluidos y costos extra. |
-| `users_latam.csv` | Información de usuarios: edad, ciudad, fecha de registro, plan y fecha de cancelación. |
-| `usage.csv` | Detalle de uso real: llamadas, mensajes, duración y longitud. |
+| `plans.csv` | Se inspecciona la tabla de planes; no se calculan ingresos. |
+| `users_latam.csv` | `user_id, age, city, plan, reg_date, churn_date` |
+| `usage.csv` | `id, user_id, type, date, duration, length` |
 
-> Los datasets originales pertenecen al entorno del curso. Para ejecutar el notebook localmente, coloca los archivos en `data/raw/` con los nombres exactos anteriores.
+`user_id` en usuarios e `id` en eventos deben ser únicos y no nulos. Los eventos deben pertenecer a un usuario y tener tipo `call` o `text`. La duración de llamadas debe ser numérica, no negativa y no nula. La unidad de minutos se asume del ejercicio: confírmala antes de usar otra fuente.
 
-## Herramientas
+No publiques archivos de clientes ni materiales de curso sin derechos de redistribución. La licencia del código no concede derechos sobre los datasets.
 
-- Python
-- Pandas
-- NumPy
-- Matplotlib
-- Seaborn
-- Jupyter Notebook
+## Ejecución
 
-## Flujo de trabajo
-
-1. Carga y exploración inicial de los datasets.
-2. Revisión de estructura, tipos de datos y valores nulos.
-3. Identificación de valores inválidos, sentinels y fechas fuera de rango.
-4. Limpieza básica de datos.
-5. Agregación del uso por usuario.
-6. Estadísticas descriptivas por cliente.
-7. Visualización de distribuciones.
-8. Detección de outliers con boxplots e IQR.
-9. Segmentación por edad y nivel de uso.
-10. Conclusiones ejecutivas y recomendaciones de negocio.
-
-## Principales hallazgos
-
-- El dataset `plans` contiene 2 planes: Básico y Premium.
-- El dataset `users` contiene 4000 usuarios y el dataset `usage` contiene 40000 registros de uso.
-- En `users`, la columna `city` presentó valores faltantes y valores inconsistentes como `?`.
-- En `age`, se detectó el sentinel `-999`, que fue reemplazado por la mediana.
-- En `reg_date`, se encontraron 40 registros del año 2026, fuera del rango del proyecto, por lo que fueron marcados como fechas inválidas.
-- En `usage`, los nulos en `duration` y `length` dependen del tipo de evento: llamadas o mensajes.
-- La mayoría de usuarios pertenece al plan Básico.
-- La mayoría de clientes se ubica en el segmento de uso medio.
-- Los minutos de llamada presentan mayor dispersión y posibles usuarios de alto consumo.
-
-## Segmentación creada
-
-### Segmentación por uso
-
-- **Bajo uso:** menos de 5 llamadas y menos de 5 mensajes.
-- **Uso medio:** menos de 10 llamadas y menos de 10 mensajes.
-- **Alto uso:** resto de casos.
-
-### Segmentación por edad
-
-- **Joven:** edad menor a 30 años.
-- **Adulto:** edad menor a 60 años.
-- **Adulto Mayor:** edad igual o mayor a 60 años.
-
-## Recomendaciones de negocio
-
-- Diseñar campañas diferenciadas para clientes de bajo, medio y alto uso.
-- Ofrecer beneficios especiales o planes Premium a clientes de alto consumo.
-- Revisar usuarios con minutos de llamada extremos para diferenciar clientes intensivos de posibles anomalías.
-- Mantener los nulos de `churn_date` como posible indicador de clientes activos.
-- Imputar o marcar ciudades faltantes como `Unknown` para no perder registros en análisis geográficos.
-- Excluir o revisar fechas fuera de rango antes de realizar análisis temporales.
-
-## Estructura del repositorio
-
-```text
-connectatel-telecom-analysis/
-├── notebooks/
-│   └── connectatel_analysis.ipynb
-├── data/
-│   └── raw/
-│       └── README.md
-├── README.md
-├── requirements.txt
-├── .gitignore
-└── LICENSE
-```
-
-## Cómo ejecutar el proyecto
-
-1. Clona este repositorio o descarga los archivos.
-2. Coloca los datasets en la carpeta `data/raw/`:
-   - `plans.csv`
-   - `users_latam.csv`
-   - `usage.csv`
-3. Instala las dependencias:
+Recomendado: Python 3.11 o 3.12 y un entorno virtual.
 
 ```bash
-pip install -r requirements.txt
-```
-
-4. Abre el notebook:
-
-```bash
+git clone https://github.com/Sacuervo26/connectatel-telecom-analysis.git
+cd connectatel-telecom-analysis
+python -m venv .venv
+# Linux/macOS: source .venv/bin/activate
+# Windows PowerShell: .venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 jupyter notebook notebooks/connectatel_analysis.ipynb
 ```
 
-5. Ejecuta las celdas en orden.
+Ejecuta las celdas en orden desde un kernel limpio. Se resuelve la carpeta de datos desde la raíz o desde `notebooks/`. Para otra ubicación configura `CONNECTATEL_DATA_DIR` antes de iniciar Jupyter; por ejemplo en PowerShell:
 
-## Autor
+```powershell
+$env:CONNECTATEL_DATA_DIR = "C:\datos\connectatel"
+```
 
-Sebastián Cuervo
+El error de archivos faltantes muestra los nombres y la ruta que debes revisar. Instalar dependencias no descarga datos.
+
+## Pruebas sin los datos del curso
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+Las cuatro pruebas usan datos artificiales mínimos en memoria, nunca como resultados de negocio. Comprueban sintaxis de las celdas, mensaje por archivos faltantes, exclusión de mensajes del total de minutos, filtro de fechas, usuarios sin uso, edad faltante y rechazo de llamadas sin duración. Se verificaron con pandas 2.2.3 y NumPy 2.3.5. **No sustituyen una ejecución completa ni validan gráficos o conclusiones originales.**
+
+## Decisiones y límites
+
+- Perfil anual: solo eventos con fecha válida de 2024. Se reporta el número excluido.
+- Sin eventos observados se asigna cero uso; esto no prueba inactividad real.
+- Sentinel de edad `-999`: mediana según la regla del ejercicio. La imputación puede sesgar segmentos; edad ausente residual se clasifica como `Sin dato`.
+- Uso bajo: llamadas < 5 y mensajes < 5; medio: ambos < 10; alto: resto. Son reglas exploratorias, no umbrales comerciales validados.
+- Los nulos que no aplican al tipo de evento son estructurales; una tabla cruzada no demuestra por sí sola MAR.
+- Una fecha de cancelación vacía no confirma cliente activo sin validar la fuente.
+- Las recomendaciones son hipótesis por contrastar, no efectos medidos.
+
+## Próximo paso
+
+Recuperar datos autorizados, ejecutar desde cero y actualizar cifras, gráficos y conclusiones. No es necesario ni está autorizado redistribuir los datos originales para hacer esa validación.
+
+**Autor:** Sebastián Cuervo
